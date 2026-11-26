@@ -1,0 +1,19 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.idea/
+.vscode/
+
+# Argoverse 2 images stay local. The scene list is the only data file in git.
+data/av2/*
+!data/av2/scenes.txt
+
+# DINOv2 weights are downloaded separately.
+weights/*
+!weights/.gitkeep
+
+# Caches and checkpoints. The current checkpoint is larger than GitHub's 100 MB limit.
+outputs/*
