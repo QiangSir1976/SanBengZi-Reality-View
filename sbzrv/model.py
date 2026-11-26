@@ -56,25 +56,34 @@ class _SelfAttention(nn.Module):
         return self.proj(out)
 
 
-def _attend(q, k, v):
-    """Short sequences stay on the explicit map. The 4096-token map uses the
-    fused kernel when gradients are on, and a query chunk when they are off.
+def _jvp_active() -> bool:
+    """MeanFlow's du/dt uses forward-mode AD. The fused attention kernel cannot."""
+    functorch = getattr(torch._C, "_functorch", None)
+    peek = getattr(functorch, "peek_interpreter_stack", None) if functorch else None
+    if peek is None:
+        return False
+    return peek() is not None
 
-    Forward-mode AD, which MeanFlow uses for du/dt, is not implemented for the
-    fused kernel. A query chunk keeps that pass inside ordinary matmul.
+
+def _attend(q, k, v):
+    """Short sequences stay on the explicit map.
+
+    The 4096-token map uses the fused kernel. Forward-mode AD, which MeanFlow
+    uses for du/dt, is not implemented for that kernel, so the JVP falls back
+    to a query chunk of ordinary matmul.
     """
     n = q.shape[-2]
     scale = q.shape[-1] ** -0.5
     if n < 2048:
         attn = (q * scale) @ k.transpose(-2, -1)
         return attn.softmax(dim=-1) @ v
-    if torch.is_grad_enabled():
-        return F.scaled_dot_product_attention(q, k, v)
-    parts = []
-    for start in range(0, n, 256):
-        score = (q[..., start:start + 256, :] * scale) @ k.transpose(-2, -1)
-        parts.append(score.softmax(dim=-1) @ v)
-    return torch.cat(parts, dim=-2)
+    if _jvp_active():
+        parts = []
+        for start in range(0, n, 256):
+            score = (q[..., start:start + 256, :] * scale) @ k.transpose(-2, -1)
+            parts.append(score.softmax(dim=-1) @ v)
+        return torch.cat(parts, dim=-2)
+    return F.scaled_dot_product_attention(q, k, v)
 
 
 class _CrossAttention(nn.Module):
@@ -167,7 +176,14 @@ class VideoMeanFlow(nn.Module):
         z = z.view(b, t, c, h // tw, tw, w // tw, tw)
         z = z.permute(0, 1, 3, 5, 2, 4, 6).contiguous()
         z = z.view(b, t, self.side * self.side, c * tw * tw)
-        return self.patch(z) + self.pos
+        # Four frames receive the full table. A live step sends one frame and
+        # must use the temporal slot that frame was trained in; slot 0 is the
+        # default when the caller has not counted ticks.
+        tokens = self.patch(z)
+        slot = getattr(self, "time_slot", None)
+        if slot is not None and t == 1:
+            return tokens + self.pos[int(slot):int(slot) + 1]
+        return tokens + self.pos[:t]
 
     def _untokenize(self, tokens):
         b, t, _, p = tokens.shape

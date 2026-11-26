@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MeanFlow 结构</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #fff; display: flex; justify-content: center; }
+    svg { width: 1600px; height: auto; display: block; }
+  </style>
+</head>
+<body>
+  <svg viewBox="0 0 1600 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="mf-title mf-desc">
+    <title id="mf-title">笔记本原型的视频 MeanFlow</title>
+    <desc id="mf-desc">噪声潜变量、时刻和机位、环视词元进入 8 层视频 Transformer。网络预测平均速度，一步走回潜变量，相位解码器在 JVP 之外把潜变量画成 4 帧。</desc>
+    <defs>
+      <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#8b939e"/>
+      </marker>
+    </defs>
+    <rect width="1600" height="560" fill="#ffffff"/>
+
+    <text x="28" y="32" fill="#1a1a1a" font-size="15" font-weight="700" font-family="Segoe UI, Microsoft YaHei, sans-serif">输入</text>
+    <text x="360" y="32" fill="#1a1a1a" font-size="15" font-weight="700" font-family="Segoe UI, Microsoft YaHei, sans-serif">词元</text>
+    <text x="640" y="32" fill="#1a1a1a" font-size="15" font-weight="700" font-family="Segoe UI, Microsoft YaHei, sans-serif">8 层里的一层</text>
+    <text x="1168" y="32" fill="#1a1a1a" font-size="15" font-weight="700" font-family="Segoe UI, Microsoft YaHei, sans-serif">一步采样</text>
+
+    <rect x="28" y="52" width="280" height="96" rx="8" fill="#f7f8fa" stroke="#e4e7eb"/>
+    <text x="44" y="80" fill="#1a1a1a" font-size="13" font-weight="650" font-family="Segoe UI, Microsoft YaHei, sans-serif">噪声潜变量 z</text>
+    <text x="44" y="102" fill="#6b7280" font-size="12" font-family="Segoe UI, Microsoft YaHei, sans-serif">4 帧 × 8 × 128 × 128</text>
+    <text x="44" y="124" fill="#6b7280" font-size="12" font-family="Segoe UI, Microsoft YaHei, sans-serif">前进从纯噪声 ε 起步</text>
+
+    <rect x="28" y="164" width="280" height="96" rx="8" fill="#f7f4ee" stroke="#e4ddd0"/>
+    <text x="44" y="192" fill="#1a1a1a" font-size="13" font-weight="650" font-family="Segoe UI, Microsoft YaHei, sans-serif">时刻与机位</text>
+    <text x="44" y="214" fill="#6b7280" font-size="12" font-family="Segoe UI, Microsoft YaHei, sans-serif">r 与 t，嵌入后相加</text>
+    <text x="44" y="236" fill="#6b7280" font-size="12" font-family="Segoe UI, Microsoft YaHei, sans-serif">机位表：前进，或倒车</text>
+
+    <rect x="28" y="276" width="280" height="96" rx="8" fill="#e7f2d8" stroke="#8eaf68"/>
+    <text x="44" y="304" fill="#1a1a1a" font-size="13" font-weight="650" font-family="Segoe UI, Microsoft YaHei, sans-serif">环视词元</text>
+    <text x="44" y="326" fill="#3e6b32" font-size="12" font-family="Segoe UI, Microsoft YaHei, sans-serif">7 路 × 64 × 768</text>
+    <text x="44" y="348" fill="#3e6b32" font-size="12" font-family="Segoe UI, Microsoft YaHei, sans-serif">DINOv2 冻结，只作条件</text>
+
+    <rect x="360" y="120" width="220" height="252" rx="10" fill="#fcfcfd" stroke="#e4e7eb"/>
+    <text x="470" y="156" fill="#1a1a1a" font-size="13" font-weight="650" font-family="Segoe UI, Microsoft YaHei, sans-serif" text-anchor="middle">2×2 tubelet</text>
+    <text x="470" y="184" fill="#6b7280" font-size="12" font-family="Segoe UI, Microsoft YaHei, sans-serif" text-anchor="middle">每帧 (128/2)²</text>
+    <text x="470" y="220" fill="#1a1a1a" font-size="20" font-weight="650" font-family="Segoe UI, Microsoft YaHei, sans-serif" text-anchor="middle">4096</text>
+    <text x="470" y="246" fill="#6b7280" font-size="12" font-family="Segoe UI, Microsoft YaHei, sans-serif" text-anchor="middle">空间词元 × 4 帧</text>
+    <text x="470" y="286" fill="#1a1a1a" font-size="13" font-weight="650" font-family="Segoe UI, Microsoft YaHei, sans-serif" text-anchor="middle">宽度 384</text>
+    <text x="470" y="312" fill="#6b7280" font-size="12" font-family="Segoe UI, Microsoft YaHei, sans-serif" text-anchor="middle">6 个头</text>
+    <text x="470" y="340" fill="#6b7280" font-size="12" font-family="Segoe UI, Microsoft YaHei, sans-serif" text-anchor="middle">约 3160 万参数</text>
+
+    <rect x="640" y="56" width="460" height="420" rx="12" fill="#fcfcfd" stroke="#e4e7eb"/>
+    <text x="870" y="84" fill="#6b7280" font-size="12" font-family="Segoe UI, Microsoft YaHei, sans-serif" text-anchor="middle">下面五步重复 8 次</text>
+
+    <rect x="664" y="100" width="412" height="56" rx="8" fill="#f3e9fb" stroke="#ddcdee"/>
+    <text x="680" y="124" fill="#1a1a1a" font-size="13" font-weight="650" font-family="Segoe UI, Microsoft YaHei, sans-serif">AdaLN</text>
+    <text x="680" y="144" fill="#6b7280" font-size="12" font-family="Segoe UI, Microsoft YaHei, sans-serif">t、t−r 与机位。门控从零开始</text>
+
+    <rect x="664" y="168" width="412" height="52" rx="8" fill="#e7eef8" stroke="#d5deee"/>
+    <text x="680" y="190" fill="#1a1a1a" font-size="13" font-weight="650" font-family="Segoe UI, Microsoft YaHei, sans-serif">空间注意力</text>
+    <text x="680" y="208" fill="#6b7280" font-size="12" font-family="Segoe UI, Microsoft YaHei, sans-serif">同一帧里 4096 个词元互看</text>
+
+    <rect x="664" y="232" width="412" height="52" rx="8" fill="#fbf3e4" stroke="#f0e0c4"/>
+    <text x="680" y="254" fill="#1a1a1a" font-size="13" font-weight="650" font-family="Segoe UI, Microsoft YaHei, sans-serif">帧注意力</text>
+    <text x="680" y="272" fill="#6b7280" font-size="12" font-family="Segoe UI, Microsoft YaHei, sans-serif">同一空间位置上的 4 帧互看</text>
+
+    <rect x="664" y="296" width="412" height="52" rx="8" fill="#e7f2d8" stroke="#d5e6c4"/>
+    <text x="680" y="318" fill="#1a1a1a" font-size="13" font-weight="650" font-family="Segoe UI, Microsoft YaHei, sans-serif">交叉注意力</text>
+    <text x="680" y="336" fill="#6b7280" font-size="12" font-family="Segoe UI, Microsoft YaHei, sans-serif">读环视词元。对条件的切向是 0</text>
+
+    <rect x="664" y="360" width="412" height="52" rx="8" fill="#ffffff" stroke="#e4e7eb"/>
+    <text x="680" y="382" fill="#1a1a1a" font-size="13" font-weight="650" font-family="Segoe UI, Microsoft YaHei, sans-serif">前馈</text>
+    <text x="680" y="400" fill="#6b7280" font-size="12" font-family="Segoe UI, Microsoft YaHei, sans-serif">4 倍宽，GELU。再经 AdaLN 加回</text>
+
+    <text x="870" y="444" fill="#6b7280" font-size="12" font-family="Segoe UI, Microsoft YaHei, sans-serif" text-anchor="middle">JVP 切向 (v, 0, 1)，对应 z、r、t</text>
+
+    <rect x="1168" y="56" width="400" height="248" rx="12" fill="#fff7f4" stroke="#bf4520"/>
+    <text x="1188" y="88" fill="#1a1a1a" font-size="13" font-weight="650" font-family="Segoe UI, Microsoft YaHei, sans-serif">平均速度 u</text>
+    <text x="1188" y="114" fill="#6b7280" font-size="13" font-family="Segoe UI, Microsoft YaHei, sans-serif">z_r = z_t − (t − r) u</text>
+    <text x="1188" y="144" fill="#1a1a1a" font-size="13" font-weight="650" font-family="Segoe UI, Microsoft YaHei, sans-serif">前进，一次求值</text>
+    <text x="1188" y="168" fill="#6b7280" font-size="13" font-family="Segoe UI, Microsoft YaHei, sans-serif">ẑ = ε − u(ε, 0, 1)</text>
+    <text x="1188" y="200" fill="#1a1a1a" font-size="13" font-weight="650" font-family="Segoe UI, Microsoft YaHei, sans-serif">换到倒车</text>
+    <text x="1188" y="224" fill="#6b7280" font-size="13" font-family="Segoe UI, Microsoft YaHei, sans-serif">0.2 z_前进 + 0.8 ε，机位改为倒车</text>
+    <text x="1188" y="248" fill="#6b7280" font-size="12" font-family="Segoe UI, Microsoft YaHei, sans-serif">仍是一次前向</text>
+
+    <rect x="1168" y="320" width="400" height="156" rx="12" fill="#f7f4ee" stroke="#d9d1c3"/>
+    <text x="1188" y="352" fill="#1a1a1a" font-size="13" font-weight="650" font-family="Segoe UI, Microsoft YaHei, sans-serif">相位解码</text>
+    <text x="1188" y="378" fill="#6b7280" font-size="13" font-family="Segoe UI, Microsoft YaHei, sans-serif">8×128×128 → 4×256×256</text>
+    <text x="1188" y="404" fill="#6b7280" font-size="13" font-family="Segoe UI, Microsoft YaHei, sans-serif">一次 2 倍像素重排</text>
+    <text x="1188" y="430" fill="#6b7280" font-size="13" font-family="Segoe UI, Microsoft YaHei, sans-serif">解码器留在 JVP 外面</text>
+    <text x="1188" y="454" fill="#6b7280" font-size="12" font-family="Segoe UI, Microsoft YaHei, sans-serif">损失在潜变量上，像素损失只约束画面</text>
+
+    <path d="M 308,200 H 360" fill="none" stroke="#8b939e" stroke-width="1.2" marker-end="url(#arr)"/>
+    <path d="M 580,246 H 640" fill="none" stroke="#8b939e" stroke-width="1.2" marker-end="url(#arr)"/>
+    <path d="M 1100,180 H 1168" fill="none" stroke="#8b939e" stroke-width="1.2" marker-end="url(#arr)"/>
+
+    <text x="28" y="536" fill="#8b939e" font-size="12" font-family="Segoe UI, Microsoft YaHei, sans-serif">笔记本原型的视频 MeanFlow。宽度、层数和 256 分辨率是这颗 RTX 4090 上的设计取值，不是特斯拉公布的层表。</text>
+  </svg>
+</body>
+</html>

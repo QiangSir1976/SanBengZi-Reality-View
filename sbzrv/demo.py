@@ -9,6 +9,7 @@ import numpy as np
 import torch
 from PIL import Image, ImageDraw
 
+from .arrows import paint_route_tensor
 from .autoencoder import Refiner, load_codec
 from .config import ROOT, Config
 from .dataset import build_cache
@@ -145,7 +146,7 @@ def _shot(pack, scene, frame, rig):
     else:
         note = "环视特征进去，一次前向得到车后上方的机位"
         label = "前进"
-        generated = pack["drive"][scene, frame]
+        generated = paint_route_tensor(pack["drive"][scene, frame])
         target = pack["drive_target"][scene, frame]
     _header(card, draw, label, note)
 

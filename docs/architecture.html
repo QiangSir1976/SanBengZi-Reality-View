@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reality View architecture</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #ffffff;
+      color: #1a1a1a;
+      font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 20px;
+    }
+    .diagram-container { width: 100%; overflow-x: auto; }
+    svg { width: 100%; height: auto; display: block; }
+    @media print {
+      .diagram-container { overflow-x: visible; }
+      svg { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="diagram-container">
+    <svg viewBox="0 0 1680 700" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="sbz-arch-title sbz-arch-desc">
+      <title id="sbz-arch-title">Reality View architecture</title>
+      <desc id="sbz-arch-desc">Seven ring cameras are encoded by a frozen DINOv2 into vision tokens. A one-step video MeanFlow turns those tokens into a latent, and a detail codec draws the drive or reverse view. Direction warp supplies the training target.</desc>
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#8b939e"/>
+        </marker>
+        <marker id="arr-d" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#a3aab2"/>
+        </marker>
+        <clipPath id="f1"><rect x="248" y="56" width="168" height="100" rx="4"/></clipPath>
+        <clipPath id="f2"><rect x="248" y="184" width="168" height="100" rx="4"/></clipPath>
+        <clipPath id="f3"><rect x="248" y="312" width="168" height="100" rx="4"/></clipPath>
+        <clipPath id="d1"><rect x="1268" y="72" width="176" height="112" rx="4"/></clipPath>
+        <clipPath id="d2"><rect x="1268" y="248" width="176" height="112" rx="4"/></clipPath>
+      </defs>
+
+      <rect width="1680" height="700" fill="#ffffff"/>
+
+      <text x="32" y="28" fill="#1a1a1a" font-size="15" font-weight="700" font-family="Segoe UI, Helvetica, Arial, sans-serif">Camera rig</text>
+      <text x="248" y="28" fill="#1a1a1a" font-size="15" font-weight="700" font-family="Segoe UI, Helvetica, Arial, sans-serif">Example frames</text>
+      <text x="456" y="28" fill="#1a1a1a" font-size="15" font-weight="700" font-family="Segoe UI, Helvetica, Arial, sans-serif">Tokens</text>
+      <text x="760" y="28" fill="#1a1a1a" font-size="15" font-weight="700" font-family="Segoe UI, Helvetica, Arial, sans-serif">One-step MeanFlow</text>
+      <text x="1248" y="28" fill="#1a1a1a" font-size="15" font-weight="700" font-family="Segoe UI, Helvetica, Arial, sans-serif">Views</text>
+
+      <!-- rig -->
+      <rect x="100" y="196" width="40" height="108" rx="12" fill="#2c333c"/>
+      <rect x="106" y="208" width="28" height="28" rx="4" fill="#4c5562"/>
+      <rect x="106" y="248" width="28" height="36" rx="3" fill="#6a7380"/>
+      <polygon points="120,184 100,196 140,196" fill="#2c333c"/>
+
+      <rect x="107" y="156" width="22" height="12" rx="2" fill="#f3f5f7" stroke="#9aa3ad" stroke-width="1"/>
+      <text x="118" y="148" fill="#5c6570" font-size="11" font-family="Segoe UI, Helvetica, Arial, sans-serif" text-anchor="middle">Front</text>
+
+      <rect x="48" y="198" width="22" height="12" rx="2" fill="#f3f5f7" stroke="#9aa3ad" stroke-width="1"/>
+      <text x="59" y="190" fill="#5c6570" font-size="11" font-family="Segoe UI, Helvetica, Arial, sans-serif" text-anchor="middle">F left</text>
+      <rect x="166" y="198" width="22" height="12" rx="2" fill="#f3f5f7" stroke="#9aa3ad" stroke-width="1"/>
+      <text x="177" y="190" fill="#5c6570" font-size="11" font-family="Segoe UI, Helvetica, Arial, sans-serif" text-anchor="middle">F right</text>
+
+      <rect x="28" y="248" width="22" height="12" rx="2" fill="#f3f5f7" stroke="#9aa3ad" stroke-width="1"/>
+      <text x="39" y="240" fill="#5c6570" font-size="11" font-family="Segoe UI, Helvetica, Arial, sans-serif" text-anchor="middle">Side L</text>
+      <rect x="186" y="248" width="22" height="12" rx="2" fill="#f3f5f7" stroke="#9aa3ad" stroke-width="1"/>
+      <text x="197" y="240" fill="#5c6570" font-size="11" font-family="Segoe UI, Helvetica, Arial, sans-serif" text-anchor="middle">Side R</text>
+
+      <rect x="48" y="304" width="22" height="12" rx="2" fill="#f3f5f7" stroke="#9aa3ad" stroke-width="1"/>
+      <text x="59" y="296" fill="#5c6570" font-size="11" font-family="Segoe UI, Helvetica, Arial, sans-serif" text-anchor="middle">Rear L</text>
+      <rect x="166" y="304" width="22" height="12" rx="2" fill="#f3f5f7" stroke="#9aa3ad" stroke-width="1"/>
+      <text x="177" y="296" fill="#5c6570" font-size="11" font-family="Segoe UI, Helvetica, Arial, sans-serif" text-anchor="middle">Rear R</text>
+
+      <text x="118" y="360" fill="#8b939e" font-size="11" font-family="Segoe UI, Helvetica, Arial, sans-serif" text-anchor="middle">7 cameras × 4 frames</text>
+
+      <!-- frames -->
+      <image href="frames/front.jpg" x="248" y="56" width="168" height="100" preserveAspectRatio="xMidYMid slice" clip-path="url(#f1)"/>
+      <rect x="248" y="56" width="168" height="100" rx="4" fill="none" stroke="#e1e4e8" stroke-width="1"/>
+      <text x="248" y="170" fill="#6b7280" font-size="11" font-family="Segoe UI, Helvetica, Arial, sans-serif">Front center · t0</text>
+
+      <image href="frames/side.jpg" x="248" y="184" width="168" height="100" preserveAspectRatio="xMidYMid slice" clip-path="url(#f2)"/>
+      <rect x="248" y="184" width="168" height="100" rx="4" fill="none" stroke="#e1e4e8" stroke-width="1"/>
+      <text x="248" y="298" fill="#6b7280" font-size="11" font-family="Segoe UI, Helvetica, Arial, sans-serif">Side left · t0</text>
+
+      <image href="frames/rear.jpg" x="248" y="312" width="168" height="100" preserveAspectRatio="xMidYMid slice" clip-path="url(#f3)"/>
+      <rect x="248" y="312" width="168" height="100" rx="4" fill="none" stroke="#e1e4e8" stroke-width="1"/>
+      <text x="248" y="426" fill="#6b7280" font-size="11" font-family="Segoe UI, Helvetica, Arial, sans-serif">Rear left · t0</text>
+      <text x="248" y="444" fill="#8b939e" font-size="11" font-family="Segoe UI, Helvetica, Arial, sans-serif">3 shown · 7 encoded</text>
+
+      <!-- encoder and tokens -->
+      <rect x="456" y="56" width="36" height="360" rx="8" fill="#e7f2d8" stroke="#8eaf68" stroke-width="1"/>
+      <text x="474" y="236" fill="#3e6b32" font-size="13" font-weight="650" font-family="Segoe UI, Helvetica, Arial, sans-serif" text-anchor="middle" transform="rotate(-90 474 236)">Frozen DINOv2</text>
+      <text x="474" y="432" fill="#8b939e" font-size="11" font-family="Segoe UI, Helvetica, Arial, sans-serif" text-anchor="middle">ViT-B/14</text>
+
+      <!-- token stacks: 7 cameras, 64 tokens pooled 8×8 -->
+      <g fill="#6e9448">
+        <rect x="516" y="128" width="16" height="14" rx="2"/><rect x="516" y="146" width="16" height="14" rx="2"/><rect x="516" y="164" width="16" height="14" rx="2"/><rect x="516" y="182" width="16" height="14" rx="2"/><rect x="516" y="200" width="16" height="14" rx="2"/><rect x="516" y="218" width="16" height="14" rx="2"/><rect x="516" y="236" width="16" height="14" rx="2"/><rect x="516" y="254" width="16" height="14" rx="2"/><rect x="516" y="272" width="16" height="14" rx="2"/><rect x="516" y="290" width="16" height="14" rx="2"/><rect x="516" y="308" width="16" height="14" rx="2"/><rect x="516" y="326" width="16" height="14" rx="2"/>
+      </g>
+      <g fill="#84a85e">
+        <rect x="544" y="128" width="16" height="14" rx="2"/><rect x="544" y="146" width="16" height="14" rx="2"/><rect x="544" y="164" width="16" height="14" rx="2"/><rect x="544" y="182" width="16" height="14" rx="2"/><rect x="544" y="200" width="16" height="14" rx="2"/><rect x="544" y="218" width="16" height="14" rx="2"/><rect x="544" y="236" width="16" height="14" rx="2"/><rect x="544" y="254" width="16" height="14" rx="2"/><rect x="544" y="272" width="16" height="14" rx="2"/><rect x="544" y="290" width="16" height="14" rx="2"/><rect x="544" y="308" width="16" height="14" rx="2"/><rect x="544" y="326" width="16" height="14" rx="2"/>
+      </g>
+      <g fill="#9abc74">
+        <rect x="572" y="128" width="16" height="14" rx="2"/><rect x="572" y="146" width="16" height="14" rx="2"/><rect x="572" y="164" width="16" height="14" rx="2"/><rect x="572" y="182" width="16" height="14" rx="2"/><rect x="572" y="200" width="16" height="14" rx="2"/><rect x="572" y="218" width="16" height="14" rx="2"/><rect x="572" y="236" width="16" height="14" rx="2"/><rect x="572" y="254" width="16" height="14" rx="2"/><rect x="572" y="272" width="16" height="14" rx="2"/><rect x="572" y="290" width="16" height="14" rx="2"/><rect x="572" y="308" width="16" height="14" rx="2"/><rect x="572" y="326" width="16" height="14" rx="2"/>
+      </g>
+      <g fill="#5c84a6">
+        <rect x="600" y="128" width="16" height="14" rx="2"/><rect x="600" y="146" width="16" height="14" rx="2"/><rect x="600" y="164" width="16" height="14" rx="2"/><rect x="600" y="182" width="16" height="14" rx="2"/><rect x="600" y="200" width="16" height="14" rx="2"/><rect x="600" y="218" width="16" height="14" rx="2"/><rect x="600" y="236" width="16" height="14" rx="2"/><rect x="600" y="254" width="16" height="14" rx="2"/><rect x="600" y="272" width="16" height="14" rx="2"/><rect x="600" y="290" width="16" height="14" rx="2"/><rect x="600" y="308" width="16" height="14" rx="2"/><rect x="600" y="326" width="16" height="14" rx="2"/>
+      </g>
+      <g fill="#7a9ebc">
+        <rect x="628" y="128" width="16" height="14" rx="2"/><rect x="628" y="146" width="16" height="14" rx="2"/><rect x="628" y="164" width="16" height="14" rx="2"/><rect x="628" y="182" width="16" height="14" rx="2"/><rect x="628" y="200" width="16" height="14" rx="2"/><rect x="628" y="218" width="16" height="14" rx="2"/><rect x="628" y="236" width="16" height="14" rx="2"/><rect x="628" y="254" width="16" height="14" rx="2"/><rect x="628" y="272" width="16" height="14" rx="2"/><rect x="628" y="290" width="16" height="14" rx="2"/><rect x="628" y="308" width="16" height="14" rx="2"/><rect x="628" y="326" width="16" height="14" rx="2"/>
+      </g>
+      <g fill="#c4a05a">
+        <rect x="656" y="128" width="16" height="14" rx="2"/><rect x="656" y="146" width="16" height="14" rx="2"/><rect x="656" y="164" width="16" height="14" rx="2"/><rect x="656" y="182" width="16" height="14" rx="2"/><rect x="656" y="200" width="16" height="14" rx="2"/><rect x="656" y="218" width="16" height="14" rx="2"/><rect x="656" y="236" width="16" height="14" rx="2"/><rect x="656" y="254" width="16" height="14" rx="2"/><rect x="656" y="272" width="16" height="14" rx="2"/><rect x="656" y="290" width="16" height="14" rx="2"/><rect x="656" y="308" width="16" height="14" rx="2"/><rect x="656" y="326" width="16" height="14" rx="2"/>
+      </g>
+      <g fill="#d4b46e">
+        <rect x="684" y="128" width="16" height="14" rx="2"/><rect x="684" y="146" width="16" height="14" rx="2"/><rect x="684" y="164" width="16" height="14" rx="2"/><rect x="684" y="182" width="16" height="14" rx="2"/><rect x="684" y="200" width="16" height="14" rx="2"/><rect x="684" y="218" width="16" height="14" rx="2"/><rect x="684" y="236" width="16" height="14" rx="2"/><rect x="684" y="254" width="16" height="14" rx="2"/><rect x="684" y="272" width="16" height="14" rx="2"/><rect x="684" y="290" width="16" height="14" rx="2"/><rect x="684" y="308" width="16" height="14" rx="2"/><rect x="684" y="326" width="16" height="14" rx="2"/>
+      </g>
+      <text x="608" y="360" fill="#8b939e" font-size="11" font-family="Segoe UI, Helvetica, Arial, sans-serif" text-anchor="middle">64 / camera</text>
+
+      <!-- meanflow -->
+      <rect x="760" y="48" width="360" height="384" rx="12" fill="#fcfcfd" stroke="#e4e7eb" stroke-width="1"/>
+      <text x="818" y="74" fill="#6b7280" font-size="11" font-family="Segoe UI, Helvetica, Arial, sans-serif" text-anchor="middle">Spatial</text>
+      <text x="922" y="74" fill="#6b7280" font-size="11" font-family="Segoe UI, Helvetica, Arial, sans-serif" text-anchor="middle">Frame</text>
+      <text x="1026" y="74" fill="#6b7280" font-size="11" font-family="Segoe UI, Helvetica, Arial, sans-serif" text-anchor="middle">Vision</text>
+
+      <!-- row cells: spatial / frame / vision -->
+      <g>
+        <rect x="794" y="88" width="48" height="10" rx="1" fill="#d9e3f4"/>
+        <rect x="794" y="100" width="48" height="10" rx="1" fill="#c6d5ee"/>
+        <rect x="794" y="112" width="48" height="10" rx="1" fill="#b3c7e6"/>
+        <rect x="794" y="124" width="48" height="10" rx="1" fill="#a0b9de"/>
+        <rect x="788" y="82" width="60" height="56" rx="6" fill="none" stroke="#d5deee" stroke-width="1"/>
+
+        <rect x="898" y="88" width="48" height="10" rx="1" fill="#f8e7c8"/>
+        <rect x="898" y="100" width="48" height="10" rx="1" fill="#f0d7a8"/>
+        <rect x="898" y="112" width="48" height="10" rx="1" fill="#e8c78e"/>
+        <rect x="898" y="124" width="48" height="10" rx="1" fill="#deb574"/>
+        <rect x="892" y="82" width="60" height="56" rx="6" fill="none" stroke="#f0e0c4" stroke-width="1"/>
+
+        <rect x="1002" y="88" width="48" height="10" rx="1" fill="#e6f2d6"/>
+        <rect x="1002" y="100" width="48" height="10" rx="1" fill="#d3e8b8"/>
+        <rect x="1002" y="112" width="48" height="10" rx="1" fill="#c0de9a"/>
+        <rect x="1002" y="124" width="48" height="10" rx="1" fill="#adcf84"/>
+        <rect x="996" y="82" width="60" height="56" rx="6" fill="none" stroke="#d5e6c4" stroke-width="1"/>
+      </g>
+      <g>
+        <rect x="794" y="164" width="48" height="10" rx="1" fill="#d9e3f4"/>
+        <rect x="794" y="176" width="48" height="10" rx="1" fill="#c6d5ee"/>
+        <rect x="794" y="188" width="48" height="10" rx="1" fill="#b3c7e6"/>
+        <rect x="794" y="200" width="48" height="10" rx="1" fill="#a0b9de"/>
+        <rect x="788" y="158" width="60" height="56" rx="6" fill="none" stroke="#d5deee" stroke-width="1"/>
+
+        <rect x="898" y="164" width="48" height="10" rx="1" fill="#f8e7c8"/>
+        <rect x="898" y="176" width="48" height="10" rx="1" fill="#f0d7a8"/>
+        <rect x="898" y="188" width="48" height="10" rx="1" fill="#e8c78e"/>
+        <rect x="898" y="200" width="48" height="10" rx="1" fill="#deb574"/>
+        <rect x="892" y="158" width="60" height="56" rx="6" fill="none" stroke="#f0e0c4" stroke-width="1"/>
+
+        <rect x="1002" y="164" width="48" height="10" rx="1" fill="#e6f2d6"/>
+        <rect x="1002" y="176" width="48" height="10" rx="1" fill="#d3e8b8"/>
+        <rect x="1002" y="188" width="48" height="10" rx="1" fill="#c0de9a"/>
+        <rect x="1002" y="200" width="48" height="10" rx="1" fill="#adcf84"/>
+        <rect x="996" y="158" width="60" height="56" rx="6" fill="none" stroke="#d5e6c4" stroke-width="1"/>
+      </g>
+      <g>
+        <rect x="794" y="240" width="48" height="10" rx="1" fill="#d9e3f4"/>
+        <rect x="794" y="252" width="48" height="10" rx="1" fill="#c6d5ee"/>
+        <rect x="794" y="264" width="48" height="10" rx="1" fill="#b3c7e6"/>
+        <rect x="794" y="276" width="48" height="10" rx="1" fill="#a0b9de"/>
+        <rect x="788" y="234" width="60" height="56" rx="6" fill="none" stroke="#d5deee" stroke-width="1"/>
+
+        <rect x="898" y="240" width="48" height="10" rx="1" fill="#f8e7c8"/>
+        <rect x="898" y="252" width="48" height="10" rx="1" fill="#f0d7a8"/>
+        <rect x="898" y="264" width="48" height="10" rx="1" fill="#e8c78e"/>
+        <rect x="898" y="276" width="48" height="10" rx="1" fill="#deb574"/>
+        <rect x="892" y="234" width="60" height="56" rx="6" fill="none" stroke="#f0e0c4" stroke-width="1"/>
+
+        <rect x="1002" y="240" width="48" height="10" rx="1" fill="#e6f2d6"/>
+        <rect x="1002" y="252" width="48" height="10" rx="1" fill="#d3e8b8"/>
+        <rect x="1002" y="264" width="48" height="10" rx="1" fill="#c0de9a"/>
+        <rect x="1002" y="276" width="48" height="10" rx="1" fill="#adcf84"/>
+        <rect x="996" y="234" width="60" height="56" rx="6" fill="none" stroke="#d5e6c4" stroke-width="1"/>
+      </g>
+      <g>
+        <rect x="794" y="316" width="48" height="10" rx="1" fill="#d9e3f4"/>
+        <rect x="794" y="328" width="48" height="10" rx="1" fill="#c6d5ee"/>
+        <rect x="794" y="340" width="48" height="10" rx="1" fill="#b3c7e6"/>
+        <rect x="794" y="352" width="48" height="10" rx="1" fill="#a0b9de"/>
+        <rect x="788" y="310" width="60" height="56" rx="6" fill="none" stroke="#d5deee" stroke-width="1"/>
+
+        <rect x="898" y="316" width="48" height="10" rx="1" fill="#f8e7c8"/>
+        <rect x="898" y="328" width="48" height="10" rx="1" fill="#f0d7a8"/>
+        <rect x="898" y="340" width="48" height="10" rx="1" fill="#e8c78e"/>
+        <rect x="898" y="352" width="48" height="10" rx="1" fill="#deb574"/>
+        <rect x="892" y="310" width="60" height="56" rx="6" fill="none" stroke="#f0e0c4" stroke-width="1"/>
+
+        <rect x="1002" y="316" width="48" height="10" rx="1" fill="#e6f2d6"/>
+        <rect x="1002" y="328" width="48" height="10" rx="1" fill="#d3e8b8"/>
+        <rect x="1002" y="340" width="48" height="10" rx="1" fill="#c0de9a"/>
+        <rect x="1002" y="352" width="48" height="10" rx="1" fill="#adcf84"/>
+        <rect x="996" y="310" width="60" height="56" rx="6" fill="none" stroke="#d5e6c4" stroke-width="1"/>
+      </g>
+
+      <text x="940" y="392" fill="#6b7280" font-size="12" font-family="Segoe UI, Helvetica, Arial, sans-serif" text-anchor="middle">× 8 layers · d 384 · 6 heads</text>
+      <text x="940" y="414" fill="#8b939e" font-size="11" font-family="Segoe UI, Helvetica, Arial, sans-serif" text-anchor="middle">latent 8×128 · tubelet 2 · 4096 tokens</text>
+
+      <!-- codec -->
+      <rect x="1160" y="148" width="36" height="184" rx="8" fill="#f7f4ee" stroke="#d9d1c3" stroke-width="1"/>
+      <text x="1168" y="240" fill="#6f6556" font-size="12" font-weight="650" font-family="Segoe UI, Helvetica, Arial, sans-serif" text-anchor="middle" transform="rotate(-90 1168 240)">Codec</text>
+      <text x="1184" y="240" fill="#8b939e" font-size="10" font-family="Segoe UI, Helvetica, Arial, sans-serif" text-anchor="middle" transform="rotate(-90 1184 240)">no JVP</text>
+
+      <!-- views -->
+      <image href="frames/drive.jpg" x="1268" y="72" width="176" height="112" preserveAspectRatio="xMidYMid slice" clip-path="url(#d1)"/>
+      <rect x="1268" y="72" width="176" height="112" rx="4" fill="none" stroke="#e1e4e8" stroke-width="1"/>
+      <text x="1268" y="200" fill="#1a1a1a" font-size="12" font-weight="650" font-family="Segoe UI, Helvetica, Arial, sans-serif">Drive</text>
+      <text x="1268" y="216" fill="#6b7280" font-size="11" font-family="Segoe UI, Helvetica, Arial, sans-serif">Behind the car, looking forward</text>
+
+      <image href="frames/reverse.jpg" x="1268" y="248" width="176" height="112" preserveAspectRatio="xMidYMid slice" clip-path="url(#d2)"/>
+      <rect x="1268" y="248" width="176" height="112" rx="4" fill="none" stroke="#e1e4e8" stroke-width="1"/>
+      <text x="1268" y="376" fill="#1a1a1a" font-size="12" font-weight="650" font-family="Segoe UI, Helvetica, Arial, sans-serif">Reverse</text>
+      <text x="1268" y="392" fill="#6b7280" font-size="11" font-family="Segoe UI, Helvetica, Arial, sans-serif">In front, looking back</text>
+
+      <!-- mini rigs -->
+      <g transform="translate(1468 64)">
+        <polygon points="58,98 18,26 98,26" fill="#bf4520" opacity="0.16"/>
+        <rect x="44" y="30" width="28" height="56" rx="8" fill="#2c333c"/>
+        <rect x="49" y="36" width="18" height="16" rx="2" fill="#6a7380"/>
+        <circle cx="58" cy="98" r="6" fill="#bf4520"/>
+      </g>
+      <g transform="translate(1468 240)">
+        <polygon points="58,14 18,92 98,92" fill="#bf4520" opacity="0.16"/>
+        <rect x="44" y="34" width="28" height="56" rx="8" fill="#2c333c"/>
+        <rect x="49" y="40" width="18" height="16" rx="2" fill="#6a7380"/>
+        <circle cx="58" cy="14" r="6" fill="#bf4520"/>
+      </g>
+
+      <!-- inference arrows -->
+      <path d="M 196,220 H 248" fill="none" stroke="#8b939e" stroke-width="1.2" marker-end="url(#arr)"/>
+      <path d="M 416,106 H 456" fill="none" stroke="#8b939e" stroke-width="1.2" marker-end="url(#arr)"/>
+      <path d="M 416,234 H 456" fill="none" stroke="#8b939e" stroke-width="1.2" marker-end="url(#arr)"/>
+      <path d="M 416,362 H 456" fill="none" stroke="#8b939e" stroke-width="1.2" marker-end="url(#arr)"/>
+      <path d="M 492,240 H 516" fill="none" stroke="#8b939e" stroke-width="1.2" marker-end="url(#arr)"/>
+      <path d="M 708,240 H 760" fill="none" stroke="#8b939e" stroke-width="1.2" marker-end="url(#arr)"/>
+      <path d="M 1120,240 H 1160" fill="none" stroke="#8b939e" stroke-width="1.2" marker-end="url(#arr)"/>
+      <path d="M 1196,240 H 1268" fill="none" stroke="#8b939e" stroke-width="1.2" marker-end="url(#arr)"/>
+
+      <!-- inside the block -->
+      <path d="M 848,110 H 892" fill="none" stroke="#c5cad3" stroke-width="1" marker-end="url(#arr)"/>
+      <path d="M 952,110 H 996" fill="none" stroke="#c5cad3" stroke-width="1" marker-end="url(#arr)"/>
+      <path d="M 848,186 H 892" fill="none" stroke="#c5cad3" stroke-width="1" marker-end="url(#arr)"/>
+      <path d="M 952,186 H 996" fill="none" stroke="#c5cad3" stroke-width="1" marker-end="url(#arr)"/>
+      <path d="M 848,262 H 892" fill="none" stroke="#c5cad3" stroke-width="1" marker-end="url(#arr)"/>
+      <path d="M 952,262 H 996" fill="none" stroke="#c5cad3" stroke-width="1" marker-end="url(#arr)"/>
+      <path d="M 848,338 H 892" fill="none" stroke="#c5cad3" stroke-width="1" marker-end="url(#arr)"/>
+      <path d="M 952,338 H 996" fill="none" stroke="#c5cad3" stroke-width="1" marker-end="url(#arr)"/>
+
+      <!-- training target -->
+      <path d="M 332,456 V 532 Q 332,540 340,540 H 1170 Q 1178,540 1178,532 V 332" fill="none" stroke="#a3aab2" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr-d)"/>
+      <rect x="620" y="524" width="156" height="18" fill="#ffffff"/>
+      <text x="698" y="537" fill="#6b7280" font-size="11" font-family="Segoe UI, Helvetica, Arial, sans-serif" text-anchor="middle">direction-warp target</text>
+
+      <text x="940" y="468" fill="#8b939e" font-size="11" font-family="Segoe UI, Helvetica, Arial, sans-serif" text-anchor="middle">Reverse mixes the drive latent at noise 0.8</text>
+
+      <!-- legend -->
+      <line x1="32" y1="560" x2="1648" y2="560" stroke="#eceff2" stroke-width="1"/>
+      <rect x="32" y="584" width="12" height="12" rx="2" fill="#6e9448"/>
+      <text x="50" y="595" fill="#6b7280" font-size="12" font-family="Segoe UI, Helvetica, Arial, sans-serif">Vision token</text>
+      <rect x="168" y="584" width="12" height="12" rx="2" fill="#a0b9de"/>
+      <text x="186" y="595" fill="#6b7280" font-size="12" font-family="Segoe UI, Helvetica, Arial, sans-serif">Spatial</text>
+      <rect x="268" y="584" width="12" height="12" rx="2" fill="#deb574"/>
+      <text x="286" y="595" fill="#6b7280" font-size="12" font-family="Segoe UI, Helvetica, Arial, sans-serif">Frame</text>
+      <rect x="360" y="584" width="12" height="12" rx="2" fill="#adcf84"/>
+      <text x="378" y="595" fill="#6b7280" font-size="12" font-family="Segoe UI, Helvetica, Arial, sans-serif">Cross-attention</text>
+      <line x1="520" y1="590" x2="552" y2="590" stroke="#a3aab2" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="560" y="595" fill="#6b7280" font-size="12" font-family="Segoe UI, Helvetica, Arial, sans-serif">Training target</text>
+      <circle cx="700" cy="590" r="4" fill="#bf4520"/>
+      <text x="712" y="595" fill="#6b7280" font-size="12" font-family="Segoe UI, Helvetica, Arial, sans-serif">Chase camera</text>
+
+      <text x="32" y="648" fill="#8b939e" font-size="12" font-family="Segoe UI, Helvetica, Arial, sans-serif">Laptop prototype. Ring cameras condition a one-step video MeanFlow. The chase views are direction warps, not a roof camera. This is not Tesla's occupancy network.</text>
+    </svg>
+  </div>
+</body>
+</html>
